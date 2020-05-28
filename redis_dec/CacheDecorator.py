@@ -7,6 +7,8 @@ import functools
 class Cache:
 
     def __init__(self, redis_instance):
+        self.hit = 0
+        self.miss = 0
         if type(redis_instance.echo("hello")) == str:
             self.cache_container = redis_instance
         else:
@@ -17,6 +19,10 @@ class Cache:
         return ":".join(
             ["redis_dec", str(":".join([func.__name__, *[str(i) for i in args], str(kwargs)]))])
 
+    def hit_ratio(self):
+        return long(self.hit *100 /(self.hit+self.miss))
+
+
     def ttl(self, ttl=None, force_refresh=False):
         def enable(func):
             @functools.wraps(func)
@@ -24,8 +30,10 @@ class Cache:
                 target_key = self.key_generator(func, *args, **kwargs)
                 a = self.cache_container.get(target_key)
                 if a:
+                    self.hit += 1
                     return a
                 else:
+                    self.miss +=1
                     result = func(*args, **kwargs)
                     self.cache_container.set(target_key, result, ttl)
                     return result

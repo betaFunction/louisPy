@@ -23,7 +23,9 @@ class Cache:
         ])
 
     def hit_ratio(self):
-        return long(self.hit * 100 / (self.hit + self.miss))
+        if self.hit + self.miss == 0:
+            return 0
+        return int(self.hit * 100 / (self.hit + self.miss))
 
     def ttl(self, ttl=None, force_refresh=False):
         def enable(func):

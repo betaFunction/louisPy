@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="redis_decorator",
-    version="0.5",
+    version="0.6",
     author="xingfe123",
     author_email="qijia.lou@nyu.edu",
     description="Using redis as external redis_dec by one line of code",

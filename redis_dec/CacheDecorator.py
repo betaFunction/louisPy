@@ -5,7 +5,6 @@ import functools
 
 
 class Cache:
-
     def __init__(self, redis_instance):
         self.hit = 0
         self.miss = 0
@@ -13,15 +12,18 @@ class Cache:
             self.cache_container = redis_instance
         else:
             raise AttributeError(
-                "Redis instance's decode_responses must be set True. Use StrictRedis(..., decode_responses=True)")
+                "Redis instance's decode_responses must be set True. Use StrictRedis(..., decode_responses=True)"
+            )
 
     def key_generator(self, func, *args, **kwargs):
-        return ":".join(
-            ["redis_dec", str(":".join([func.__name__, *[str(i) for i in args], str(kwargs)]))])
+        return ":".join([
+            "redis_dec",
+            str(":".join([func.__name__, *[str(i) for i in args],
+                          str(kwargs)]))
+        ])
 
     def hit_ratio(self):
-        return long(self.hit *100 /(self.hit+self.miss))
-
+        return long(self.hit * 100 / (self.hit + self.miss))
 
     def ttl(self, ttl=None, force_refresh=False):
         def enable(func):
@@ -33,7 +35,7 @@ class Cache:
                     self.hit += 1
                     return a
                 else:
-                    self.miss +=1
+                    self.miss += 1
                     result = func(*args, **kwargs)
                     self.cache_container.set(target_key, result, ttl)
                     return result
@@ -48,7 +50,8 @@ class Cache:
             key = self.cache_container.scan(match="redis_dec:*")[1]
         elif not args and not kwargs:
             print("Remove every result related to this function")
-            key = self.cache_container.scan(match=":".join(["redis_dec", func.__name__, "*"]))[1]
+            key = self.cache_container.scan(
+                match=":".join(["redis_dec", func.__name__, "*"]))[1]
         else:
             key = [self.key_generator(func, *args, **kwargs)]
         if key:
@@ -93,7 +96,6 @@ class Cache:
         return func_wrapper
 
     def _de_ser_float(self, func):
-
         @functools.wraps(func)
         def func_wrapper(*args, **kwargs):
             return float(func(*args, **kwargs))
@@ -101,7 +103,6 @@ class Cache:
         return func_wrapper
 
     def int(self, ttl=None):
-
         def deco(func):
             for dec in [self._ser_number, self.ttl(ttl), self._de_ser_int]:
                 func = dec(func)

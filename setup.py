@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="redis_decorator",
-    version="0.4",
-    author="Louis Lou",
+    version="0.5",
+    author="xingfe123",
     author_email="qijia.lou@nyu.edu",
     description="Using redis as external redis_dec by one line of code",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/louisLouL/louisPy",
+    url="https://github.com/betaFunction/louisPy",
     packages=setuptools.find_packages(),
     install_requires=['redis>=2.10.6',
                       'pandas>=0.23.0'],
